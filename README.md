@@ -1,3 +1,3 @@
 ## Demo
 
-https://u120022.github.io/CourseSim/
+https://u120022.github.io/course-sim/
