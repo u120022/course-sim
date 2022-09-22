@@ -1,10 +1,10 @@
-const [getActiveUnit, setHintMessages] = arguments;
+const [getActiveUnit, setHint, diagnostics] = arguments;
 
 {
-  const macro = (from, to, needUnit, message) => {
+  const macro = (from, to, minUnit, hint) => {
     const range = [...Array(to - from + 1)].map((_, i) => from + i);
-    if (range.map((key) => getActiveUnit(key)).reduce((p, x) => p + x) < needUnit) {
-      range.map((key) => setHintMessages(key, message));
+    if (range.map((key) => getActiveUnit(key)).reduce((p, x) => p + x) < minUnit) {
+      range.map((key) => setHint(key, hint));
     }
   };
 
@@ -21,6 +21,7 @@ const [getActiveUnit, setHintMessages] = arguments;
     macro(54, 57, 2, { tag, message: "外国語科目 第2外国語から 2単位必要です。" });
     macro(58, 67, 7, { tag, message: "キャリア形成科目から 7単位必要です。" });
     macro(68, 114, 79, { tag, message: "専門科目から 79単位必要です。" });
+		diagnostics.tagArray.push(tag);
   }
 
   // 卒業研究2履修条件をもとにしたルール
@@ -36,12 +37,14 @@ const [getActiveUnit, setHintMessages] = arguments;
     macro(54, 57, 2, { tag, message: "卒業研究2の履修に 外国語科目 第2外国語から 2単位必要です。" });
     macro(58, 67, 3, { tag, message: "卒業研究2の履修に キャリア形成科目から 3単位必要です。" });
     macro(68, 114, 69, { tag, message: "卒業研究2の履修に 専門科目 から69単位必要です。" });
+		diagnostics.tagArray.push(tag);
   }
 
   // 指定科目履修条件をもとにしたルール
   {
     const tag = "プレゼンテーション1と卒業研究1履修条件";
     macro(1, 114, 70, { tag, message: "プレゼンテーション演習と卒業研究1の履修に すべての科目 から70単位必要です。" });
+		diagnostics.tagArray.push(tag);
   }
 
   // 備考をもとにしたルール
@@ -64,12 +67,13 @@ const [getActiveUnit, setHintMessages] = arguments;
     macro(105, 107, 2, { tag, message: "データベースとデータ処理-オペレーティングシステム から2単位必要です。" });
     macro(108, 110, 2, { tag, message: "画像処理基礎-生体情報工学 から2単位必要です。" });
     macro(111, 114, 4, { tag, message: "機械学習-情報システムと地球環境 から4単位必要です。" });
+		diagnostics.tagArray.push(tag);
   }
 }
 
 {
-  const macro = (key, message) => {
-    if (getActiveUnit(key) == 0) setHintMessages(key, message);
+  const macro = (key, hint) => {
+    if (getActiveUnit(key) == 0) setHint(key, hint);
   };
 
   // 必修科目
@@ -110,6 +114,7 @@ const [getActiveUnit, setHintMessages] = arguments;
     macro(88, { tag, message: "必須科目です。" });
     macro(89, { tag, message: "必須科目です。" });
     macro(90, { tag, message: "必須科目です。" });
+		diagnostics.tagArray.push(tag);
   }
 
   {
@@ -121,5 +126,6 @@ const [getActiveUnit, setHintMessages] = arguments;
     macro(87, { tag, message: "卒業研究2の履修に必要です。" });
     macro(88, { tag, message: "卒業研究2の履修に必要です。" });
     macro(89, { tag, message: "卒業研究2の履修に必要です。" });
+		// diagnostics.tagArray.push(tag);
   }
 }

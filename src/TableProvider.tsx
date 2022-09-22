@@ -2,29 +2,42 @@ import {
   createContext,
   ParentComponent,
   useContext,
-	onMount,
-	Accessor,
-	createSignal,
+  onMount,
+  Accessor,
+  createSignal,
 } from "solid-js";
-import { Hint, Course, loadCourseArray, loadAnalyzer } from "./TableLoader";
+import {
+  Hint,
+  Course,
+  loadCourseArray,
+  loadAnalyzer,
+  Analyzer,
+  Diagnostics,
+} from "./TableLoader";
 
 export type TableContextValue = {
+  complete: Accessor<boolean>;
   courseArray: Accessor<Course[]>;
+  diagnostics: Accessor<Diagnostics>;
   toggleHasCourse: (key: number) => void;
 };
 
 const TableContext = createContext<TableContextValue>();
 
 export const TableProvider: ParentComponent<{}> = (props) => {
+  const [complete, setComplete] = createSignal<boolean>();
   const [courseArray, setCourseArray] = createSignal<Course[]>();
-  const [analyzer, setAnalyzer] = createSignal<Function>();
+  const [analyzer, setAnalyzer] = createSignal<Analyzer>();
+  const [diagnostics, setDiagnostics] = createSignal<Diagnostics>();
 
-	onMount(async () => {
-		setCourseArray(await loadCourseArray());
-		const analyzer = await loadAnalyzer();
-		setAnalyzer((_) => analyzer);
-		analyze();
-	});
+  onMount(async () => {
+    const courseArray = await loadCourseArray();
+    const analyzer = await loadAnalyzer();
+    setCourseArray(() => courseArray);
+    setAnalyzer(() => analyzer);
+    analyze();
+    setComplete(true);
+  });
 
   const toggleHasCourse = (key: number) => {
     const _courseArray = [...courseArray()];
@@ -38,7 +51,7 @@ export const TableProvider: ParentComponent<{}> = (props) => {
   };
 
   const analyze = () => {
-    const ref: Map<number, Course> = new Map();
+    const ref = new Map<number, Course>();
     const _courseArray = [...courseArray()];
     for (let i = 0; i < _courseArray.length; i++) {
       _courseArray[i] = { ..._courseArray[i], hints: [] };
@@ -51,12 +64,16 @@ export const TableProvider: ParentComponent<{}> = (props) => {
     const setHint = (key: number, hint: Hint) => {
       ref.get(key).hints.push(hint);
     };
-    analyzer()(getActiveUnit, setHint);
+    const diagnostics: Diagnostics = { tagArray: [] };
+    analyzer()(getActiveUnit, setHint, diagnostics);
     setCourseArray(_courseArray);
+    setDiagnostics(diagnostics);
   };
 
   return (
-    <TableContext.Provider value={{ courseArray, toggleHasCourse }}>
+    <TableContext.Provider
+      value={{ complete, courseArray, diagnostics, toggleHasCourse }}
+    >
       {props.children}
     </TableContext.Provider>
   );

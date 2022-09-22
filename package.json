@@ -1,6 +1,6 @@
 {
-  "name": "vite-template-solid",
-  "version": "0.0.0",
+  "name": "course-sim",
+  "version": "0.1.0",
   "description": "",
   "scripts": {
     "dev": "vite",
