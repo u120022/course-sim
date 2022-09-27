@@ -210,7 +210,7 @@ const App: Component = () => {
   return (
     <div class="mx-auto min-w-[1280px] py-5">
       <div class="mb-8">
-        <h1 class="mb-3 text-center text-4xl">Uny📎</h1>
+        <h1 class="mb-3 text-center text-4xl">course-sim📎</h1>
         <p class="text-center">獲得単位が条件を満たすか確認します</p>
       </div>
       <TableProvider>
